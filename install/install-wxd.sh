@@ -26,3 +26,4 @@ $DOCKER_EXE login ${IBM_ICR_IO} \
 --username=${PROD_USER} \
 --password=${IBM_ENTITLEMENT_KEY}
 
+$LH_ROOT_DIR/ibm-lh-dev/bin/setup --license_acceptance=y --runtime=$DOCKER_EXE
