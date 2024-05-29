@@ -9,3 +9,4 @@ sentence_transformers
 python-dotenv
 ibm-cloud-sdk-core
 ibm_watson_machine_learning
+wikipedia
