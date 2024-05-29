@@ -1,0 +1,33 @@
+# Answer
+#### Watsonx.data Capabilities and Benefits
+
+Watsonx.data is a component of IBM's Watsonx AI and data platform. It is designed to help businesses scale and accelerate the impact of AI across their operations by leveraging data wherever it resides. Here are some of the capabilities and benefits of Watsonx.data:
+
+1. **Fit-for-purpose data store**: Watsonx.data is built on an open data lakehouse architecture, providing a unified view of data across all types of sources, including structured, unstructured, and semi-structured data. It offers a comprehensive solution that covers data storage, hardware, and foundational models for AI and machine learning.
+
+2. **Data governance and cataloging**: Watsonx.data provides features to help businesses manage their data more effectively, including data governance and data cataloging capabilities. This allows organizations to ensure data quality, compliance, and security.
+
+3. **Integration with various data sources**: Watsonx.data seamlessly connects with various object storage systems such as AWS S3 or IBM Cloud object storage, as well as registered databases like MongoDB, MySQL, PostgreSQL, and more. It also provides robust integration with IBM's ecosystem, allowing users to leverage existing IBM investments and streamline the flow of data and information between products.
+
+4. **Enhanced analytics and BI**: Data analysts can quickly merge data from different sources using Watsonx.data, streamlining analytics and business intelligence without the complexities of manual data movement. This enables organizations to gain valuable insights from their data and make data-driven decisions.
+
+5. **Responsible data sharing**: Watsonx.data promotes responsible data sharing by balancing broad access with strict security and compliance protocols. This ensures that data is shared securely and in accordance with privacy regulations.
+
+6. **Cost efficiency and scalability**: By combining the openness, performance, and governance of Watsonx.data with the scalability and cost efficiency of the AWS cloud infrastructure, businesses can achieve greater convenience and flexibility in their data modernization strategies.
+
+In summary, Watsonx.data provides businesses with a fit-for-purpose data store, data governance capabilities, integration with various data sources, enhanced analytics and BI, responsible data sharing, and cost efficiency. It empowers organizations to leverage their data and scale AI for business.
+
+#### Watsonx.data Supported Engines
+
+IBM Watsonx.data supports multiple query engines for data analytics and AI workloads. The supported engines include:
+
+1. Presto
+2. Apache Spark
+3. Db2
+4. Netezza
+
+These engines are fully integrated with shared metadata and can dynamically scale up and down to optimize analytics costs.
+
+Watsonx.data is built on an open lakehouse architecture, which combines the best elements of data warehouses and data lakes. It allows users to access all their data through a single point of entry and share a single copy of data across multiple query engines.
+
+By leveraging these fit-for-purpose query engines, organizations can reduce data warehouse costs by up to 50 percent and gain trusted insights quickly.
