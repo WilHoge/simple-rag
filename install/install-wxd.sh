@@ -17,8 +17,6 @@ $DOCKER_EXE cp $id:/opt - > /tmp/pkg.tar
 $DOCKER_EXE rm $id
 id=
 
-exit
-
 tar -xf /tmp/pkg.tar -C /tmp
 cat /tmp/opt/bom.txt
 cksum /tmp/opt/*/*
