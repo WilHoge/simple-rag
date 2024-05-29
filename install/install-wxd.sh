@@ -9,15 +9,15 @@ export PROD_USER=cp
 export IBM_ENTITLEMENT_KEY=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJJQk0gTWFya2V0cGxhY2UiLCJpYXQiOjE3MTY5ODIwNDgsImp0aSI6IjYxM2JhODk0Mzg5YzQ4ZjA5MGVkYjE3MTM3YTg2NzY1In0.uBOcL0PNPiNLA26IvE_chTHHflh5bvwTvxLr0Maywqw
 export IBM_ICR_IO=cp.icr.io
 
-export DOCKER_EXE=docker
-
-exit
+export DOCKER_EXE=podman
 
 $DOCKER_EXE pull $IBM_LH_TOOLBOX
 id=$($DOCKER_EXE create $IBM_LH_TOOLBOX)
 $DOCKER_EXE cp $id:/opt - > /tmp/pkg.tar
 $DOCKER_EXE rm $id
 id=
+
+exit
 
 tar -xf /tmp/pkg.tar -C /tmp
 cat /tmp/opt/bom.txt
