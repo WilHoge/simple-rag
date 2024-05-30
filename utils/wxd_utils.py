@@ -30,7 +30,7 @@ def connect_wxd(config):
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning) # disable https warning
 
     quick_engine = create_engine(
-        f"presto://{config.lh_user}:{config.password}@{config.host}:{config.lh_port}/{config.lh_catalog}/{config.lh_schema}",
+        f"presto://{config.user}:{config.password}@{config.host}:{config.lh_port}/{config.lh_catalog}/{config.lh_schema}",
         connect_args={
             'protocol': 'https', 
             'requests_kwargs': {'verify': ssl.CERT_NONE }
