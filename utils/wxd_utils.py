@@ -50,7 +50,7 @@ def get_token(conf):
 
     return access_token
 
-def load_model(model_id)
+def load_model(model_id):
     #        model_id='meta-llama/llama-2-70b-chat'
     #        model_id='mistralai/mixtral-8x7b-instruct-v01'
 
