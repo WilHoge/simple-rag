@@ -72,7 +72,7 @@ def load_model(conf, model_id):
 
     model = Model(model_id=model_id, 
         params=params, credentials=creds, 
-        project_id=project_id
+        project_id=conf.["project_id"]
     )
 
     return model
