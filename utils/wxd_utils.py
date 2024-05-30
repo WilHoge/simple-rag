@@ -16,7 +16,7 @@ def load_conf():
         "lh_cert": os.getenv("LH_CERT", "/wxd-install/ibm-lh-dev/localstorage/volumes/infra/tls/cert.crt"),
         "lh_schema": os.getenv("LH_SCHEMA", "tiny"),
         "lh_catalog": os.getenv("LH_CATALOG", "tpch"),
-        "milvus_port": os.getenv("MILVUS_PORT", "19530")
+        "milvus_port": os.getenv("MILVUS_PORT", "19530"),
         "default_query": os.getenv("DEFAULT_QUERY", "Who is Jon Fosse")
     }
 
