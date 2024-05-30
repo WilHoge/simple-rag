@@ -81,7 +81,7 @@ def load_model(conf, model_id):
 # Prompt LLM
 def ask_llm(prompt, model):
         response = model.generate_text(prompt)
-        #print(f"Question: {question_text}{response}")
+        print(f"Question: {question_text}\n Response: {response}")
         return response
 
 def make_prompt(context, question_text):
