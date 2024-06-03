@@ -78,6 +78,7 @@ def load_model(conf, model_id):
             params=params, credentials=creds, 
             project_id=conf["project_id"]
         )
+        print(f"Model {model.model_id} loaded")
         return model
     except Exception as e:
         logger.error(f"load_model> error loading model: {str(e)}")
