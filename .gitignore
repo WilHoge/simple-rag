@@ -1,2 +1,4 @@
 venv
 .DS_Store
+logs/simple-rag.log
+__*

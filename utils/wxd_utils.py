@@ -17,7 +17,7 @@ def load_conf():
         "lh_schema": os.getenv("LH_SCHEMA", "tiny"),
         "lh_catalog": os.getenv("LH_CATALOG", "tpch"),
         "milvus_port": os.getenv("MILVUS_PORT", "19530"),
-        "default_query": os.getenv("DEFAULT_QUERY", "Who is Jon Fosse")
+        "default_query": os.getenv("DEFAULT_QUERY", "Who is Jon Fosse?")
     }
 
     return(config)
@@ -55,6 +55,8 @@ def load_model(conf, model_id):
     #        model_id='meta-llama/llama-2-70b-chat'
     #        model_id='mistralai/mixtral-8x7b-instruct-v01'
 
+    logger.info(f"load_model> model_id: {model_id}")
+
     from ibm_watson_machine_learning.foundation_models import Model
     from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
 
@@ -71,22 +73,76 @@ def load_model(conf, model_id):
         GenParams.TEMPERATURE: 0,
     }
 
-    model = Model(model_id=model_id, 
-        params=params, credentials=creds, 
-        project_id=conf["project_id"]
-    )
+    try:
+        model = Model(model_id=model_id, 
+            params=params, credentials=creds, 
+            project_id=conf["project_id"]
+        )
+        return model
+    except Exception as e:
+        logger.error(f"load_model> error loading model: {str(e)}")
+        print(f"load_model> error loading model: {str(e)}")
 
-    return model
+    return None
 
 # Prompt LLM
 def ask_llm(prompt, model):
-        print(f"Call model with {prompt}")
-        response = model.generate_text(prompt)
-        print(f"Question: {prompt}\n Response: {response}")
-        return response
+    logger.info(f"ask_llm> Call model with {prompt}")
+    response = model.generate_text(prompt)
+    logger.info(f"ask_llm>\nQuestion: {prompt}\nResponse: {response}")
+    return response
 
 def make_prompt(context, question_text):
+    logger.info(f"make_prompt>\ncontext: {context}\nquestion: {question}")
     context = "\n\n".join(context)
-    return (f"{context}\n\nPlease answer a question using this text. "
+    prompt = (f"{context}\n\nPlease answer a question using this text. "
           + f"If the question is unanswerable, say \"unanswerable\"."
           + f"\n\nQuestion: {question_text}")
+    logger.info(f"make_prompt>\nprompt: {prompt}")
+    return prompt
+
+def run_gui(model, question):
+    from ipywidgets import widgets
+
+    text_input = widgets.Textarea(value=question, disabled=False)
+    result_text = widgets.Textarea(value='', disabled=True)
+    prompt_text = widgets.Textarea(value='', disabled=True)
+
+    def on_click(b):
+        logger.info(f"run_gui/on_click> You clicked the button! {text_input.value}")
+        result_text.value = "asking LLM ..."
+        prompt = text_input.value
+        prompt_text.value = prompt
+        result_text.value = ask_llm(prompt, model)
+
+    button = widgets.Button(description='Ask LLM');
+    button.on_click(on_click)
+
+    input_box  = widgets.Box([widgets.Label('Your question!'), text_input, button, widgets.Label(f"model: {model.model_id}")])
+    result_box = widgets.Box([widgets.Label('Answer:'), result_text])
+    prompt_box = widgets.Box([widgets.Label('Prompt:'), prompt_text])
+
+    box = widgets.VBox(children=[input_box , prompt_box, result_box])
+
+    result_text.layout.width = '100%'
+    result_text.layout.height = '200px'
+    prompt_text.layout.width = '100%'
+
+    display(box)
+
+def write_log(level, text):
+    if level == 'INFO':
+        logger.info(text)
+    elif level == 'ERROR':
+        logger.error(text)
+    else:
+        logger.info(text)
+
+# initialize logging
+import logging
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+handler = logging.FileHandler('../logs/simple-rag.log', mode='a', encoding='utf-8')
+formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+handler.setFormatter(formatter)
+logger.addHandler(handler)
