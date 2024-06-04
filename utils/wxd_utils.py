@@ -2,7 +2,7 @@ def load_conf():
     import os
     from dotenv import load_dotenv
 
-    load_dotenv('../utils/config.env')
+    load_dotenv(home+'/utils/config.env')
 
     # Load config from environment
     config = {
@@ -73,8 +73,6 @@ def load_model(conf, model_id):
         GenParams.TEMPERATURE: 0,
     }
 
-    print(type(model_id))
-
     try:
         model = Model(model_id=model_id, 
             params=params, credentials=creds, 
@@ -95,12 +93,12 @@ def ask_llm(prompt, model):
     logger.info(f"ask_llm>\nQuestion: {prompt}\nResponse: {response}")
     return response
 
-def make_prompt(context, question_text):
+def make_prompt(context, question):
     logger.info(f"make_prompt>\ncontext: {context}\nquestion: {question}")
     context = "\n\n".join(context)
     prompt = (f"{context}\n\nPlease answer a question using this text. "
           + f"If the question is unanswerable, say \"unanswerable\"."
-          + f"\n\nQuestion: {question_text}")
+          + f"\n\nQuestion: {question}")
     logger.info(f"make_prompt>\nprompt: {prompt}")
     return prompt
 
@@ -144,7 +142,7 @@ def run_gui_with_context(model, question, context):
     def on_click(b):
         logger.info(f"run_gui/on_click> You clicked the button! {text_input.value}")
         result_text.value = "asking LLM ..."
-        prompt = make_prompt(context_text.value, text_input.value)
+        prompt = make_prompt([context_text.value], text_input.value)
         prompt_text.value = prompt
         result_text.value = ask_llm(prompt, model)
 
@@ -158,6 +156,7 @@ def run_gui_with_context(model, question, context):
 
     box = widgets.VBox(children=[context_box, input_box, prompt_box, result_box])
 
+    context_text.layout.width = '100%'
     result_text.layout.width = '100%'
     result_text.layout.height = '200px'
     prompt_text.layout.width = '100%'
@@ -178,7 +177,8 @@ import os
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 cwd=os.getcwd()
-handler = logging.FileHandler(cwd[:cwd.find('simple-rag')+11]+'logs/simple-rag.log', mode='a', encoding='utf-8')
+home=cwd[:cwd.find('simple-rag')+11]
+handler = logging.FileHandler(home+'logs/simple-rag.log', mode='a', encoding='utf-8')
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
