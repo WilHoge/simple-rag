@@ -2,16 +2,12 @@
 
 c = get_config()  #noqa
 c.NotebookApp.certfile = u'/home/labuser/simple-rag/utils/mycert.pem'
-
 c.NotebookApp.keyfile = u'/home/labuser/simple-rag/utils/mykey.key'
-
 c.NotebookApp.ip = '0.0.0.0'
-
 c.NotebookApp.allow_remote_access = True
-
 c.NotebookApp.open_browser = False
-
 c.NotebookApp.port = 8888
+c.FileContentsManager.autosave_interval = 0
 
 #------------------------------------------------------------------------------
 # Application(SingletonConfigurable) configuration
