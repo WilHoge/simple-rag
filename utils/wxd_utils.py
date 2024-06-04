@@ -73,12 +73,14 @@ def load_model(conf, model_id):
         GenParams.TEMPERATURE: 0,
     }
 
+    print(type(model_id))
+
     try:
         model = Model(model_id=model_id, 
             params=params, credentials=creds, 
             project_id=conf["project_id"]
         )
-        print(f"Model {model.model_id} loaded")
+        print(f"Model {model_id} loaded")
         return model
     except Exception as e:
         logger.error(f"load_model> error loading model: {str(e)}")
@@ -131,6 +133,37 @@ def run_gui(model, question):
 
     display(box)
 
+def run_gui_with_context(model, question, context):
+    from ipywidgets import widgets
+
+    text_input = widgets.Textarea(value=question, disabled=False)
+    result_text = widgets.Textarea(value='', disabled=True)
+    prompt_text = widgets.Textarea(value='', disabled=True)
+    context_text = widgets.Textarea(value=context, disabled=True)
+
+    def on_click(b):
+        logger.info(f"run_gui/on_click> You clicked the button! {text_input.value}")
+        result_text.value = "asking LLM ..."
+        prompt = make_prompt(context_text.value, text_input.value)
+        prompt_text.value = prompt
+        result_text.value = ask_llm(prompt, model)
+
+    button = widgets.Button(description='Ask LLM');
+    button.on_click(on_click)
+
+    input_box  = widgets.Box([widgets.Label('Your question!'), text_input, button, widgets.Label(f"model: {model.model_id}")])
+    context_box = widgets.Box([widgets.Label('Context:'), context_text]) 
+    result_box = widgets.Box([widgets.Label('Answer:'), result_text])
+    prompt_box = widgets.Box([widgets.Label('Prompt:'), prompt_text])
+
+    box = widgets.VBox(children=[context_box, input_box, prompt_box, result_box])
+
+    result_text.layout.width = '100%'
+    result_text.layout.height = '200px'
+    prompt_text.layout.width = '100%'
+
+    display(box)
+
 def write_log(level, text):
     if level == 'INFO':
         logger.info(text)
@@ -141,9 +174,11 @@ def write_log(level, text):
 
 # initialize logging
 import logging
+import os
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-handler = logging.FileHandler('../logs/simple-rag.log', mode='a', encoding='utf-8')
+cwd=os.getcwd()
+handler = logging.FileHandler(cwd[:cwd.find('simple-rag')+11]+'logs/simple-rag.log', mode='a', encoding='utf-8')
 formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
 logger.addHandler(handler)
