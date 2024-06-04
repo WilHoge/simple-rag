@@ -1,4 +1,5 @@
 jupyterlab
+jupyter
 grpcio==1.60.0
 pymilvus
 ipython-sql==0.4.1
