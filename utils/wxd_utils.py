@@ -9,6 +9,7 @@ def load_conf():
         "api_key" : os.getenv("API_KEY", None),
         "ibm_cloud_url" : os.getenv("IBM_CLOUD_URL", None),
         "project_id" : os.getenv("PROJECT_ID", None),
+        "space_id" :  os.getenv("SPACE_ID", None),
         "host" : os.getenv("LH_HOST_NAME", "localhost"),
         "user" : os.getenv("LH_USER", "ibmlhadmin"),
         "password" : os.getenv("LH_PW", "password"),
@@ -57,8 +58,8 @@ def load_model(conf, model_id):
 
     logger.info(f"load_model> model_id: {model_id}")
 
-    from ibm_watson_machine_learning.foundation_models import Model
-    from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
+    from ibm_watsonx_ai.foundation_models import Model
+    from ibm_watsonx_ai.metanames import GenTextParamsMetaNames as GenParams
 
     creds = {
         "url": conf["ibm_cloud_url"],
@@ -86,11 +87,72 @@ def load_model(conf, model_id):
 
     return None
 
+def load_model_deployment(conf, model_id):
+
+    logger.info(f"load_model_deployment> model_id: {model_id}")
+
+    from ibm_watsonx_ai import APIClient, Credentials
+    global client
+
+    creds = {
+        "url": conf["ibm_cloud_url"],
+        "apikey": conf["api_key"] 
+    }
+
+    try:
+
+        if client == None:
+            client=APIClient(creds, space_id=conf['space_id'])
+
+        deploymentList = client.deployments.get_details()
+
+        deployedPrompts = {}
+        for deployment in deploymentList['resources']:
+            deployedPrompts[deployment['entity']['name']] = {
+                'name': deployment['entity']['name'], 
+                'id': deployment['metadata']['id'] 
+            }
+
+        logger.info(f"load_model_deployment> Deployments: {deployedPrompts}")
+
+        if model_id == '':
+            print("model_ids available are:")
+            for key in deployedPrompts:
+                print("- ", key)
+            return None
+        else:
+            deployment_id = deployedPrompts[model_id]
+
+        return deployment_id
+
+    except Exception as e:
+        logger.error(f"load_model_deployment> error loading model: {str(e)}")
+        print(f"load_model_deployment> error loading model: {str(e)}")
+
+        print("Maybe an incorect model_id has been given. model_ids available are:")
+        for key in deployedPrompts:
+            print("- ", key)
+
+    return None
+
 # Prompt LLM
 def ask_llm(prompt, model):
     logger.info(f"ask_llm> Call model with {prompt}")
     response = model.generate_text(prompt)
     logger.info(f"ask_llm>\nQuestion: {prompt}\nResponse: {response}")
+    return response
+
+def ask_llm_prompt(prompt, deployment):
+
+    from ibm_watsonx_ai.metanames import GenTextParamsMetaNames
+
+    response = client.deployments.generate_text(
+        deployment_id=deployment['id'],
+        params={
+            GenTextParamsMetaNames.PROMPT_VARIABLES: {
+                "query": prompt
+            }})
+
     return response
 
 def make_prompt(context, question):
@@ -102,7 +164,7 @@ def make_prompt(context, question):
     logger.info(f"make_prompt>\nprompt: {prompt}")
     return prompt
 
-def run_gui(model, question):
+def run_gui(deployment, question):
     from ipywidgets import widgets
 
     text_input = widgets.Textarea(value=question, disabled=False)
@@ -114,12 +176,12 @@ def run_gui(model, question):
         result_text.value = "asking LLM ..."
         prompt = text_input.value
         prompt_text.value = prompt
-        result_text.value = ask_llm(prompt, model)
+        result_text.value = ask_llm_prompt(prompt, deployment)
 
     button = widgets.Button(description='Ask LLM');
     button.on_click(on_click)
 
-    input_box  = widgets.Box([widgets.Label('Your question!'), text_input, button, widgets.Label(f"model: {model.model_id}")])
+    input_box  = widgets.Box([widgets.Label('Your question!'), text_input, button, widgets.Label(f"model: {deployment['name']}")])
     result_box = widgets.Box([widgets.Label('Answer:'), result_text])
     prompt_box = widgets.Box([widgets.Label('Prompt:'), prompt_text])
 
@@ -131,7 +193,7 @@ def run_gui(model, question):
 
     display(box)
 
-def run_gui_with_context(model, question, context):
+def run_gui_with_context(deployment, question, context):
     from ipywidgets import widgets
 
     text_input = widgets.Textarea(value=question, disabled=False)
@@ -144,12 +206,12 @@ def run_gui_with_context(model, question, context):
         result_text.value = "asking LLM ..."
         prompt = make_prompt([context_text.value], text_input.value)
         prompt_text.value = prompt
-        result_text.value = ask_llm(prompt, model)
+        result_text.value = ask_llm_prompt(prompt, deployment)
 
     button = widgets.Button(description='Ask LLM');
     button.on_click(on_click)
 
-    input_box  = widgets.Box([widgets.Label('Your question!'), text_input, button, widgets.Label(f"model: {model.model_id}")])
+    input_box  = widgets.Box([widgets.Label('Your question!'), text_input, button, widgets.Label(f"model: {deployment['name']}")])
     context_box = widgets.Box([widgets.Label('Context:'), context_text]) 
     result_box = widgets.Box([widgets.Label('Answer:'), result_text])
     prompt_box = widgets.Box([widgets.Label('Prompt:'), prompt_text])
@@ -170,6 +232,9 @@ def write_log(level, text):
         logger.error(text)
     else:
         logger.info(text)
+
+# global variables
+client = None
 
 # initialize logging
 import logging
