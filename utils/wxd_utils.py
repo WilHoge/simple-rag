@@ -87,6 +87,89 @@ def load_model(conf, model_id):
 
     return None
 
+def load_embedding_model(conf, model_id):
+
+    from ibm_watsonx_ai import Credentials
+    from ibm_watsonx_ai.foundation_models import Embeddings
+    from ibm_watsonx_ai.metanames import EmbedTextParamsMetaNames as EmbedParams
+    from ibm_watsonx_ai.foundation_models.utils.enums import EmbeddingTypes
+
+    logger.info(f"load_embedding_model> model_id: {model_id}")
+
+    from ibm_watsonx_ai import APIClient, Credentials
+    global client
+
+    creds = {
+        "url": conf["ibm_cloud_url"],
+        "apikey": conf["api_key"] 
+    }
+
+    embed_params = {
+        EmbedParams.TRUNCATE_INPUT_TOKENS: 3,
+        EmbedParams.RETURN_OPTIONS: {
+            'input_text': True
+            }
+    }
+
+    try:
+
+        if client == None:
+            client=APIClient(creds, space_id=conf['space_id'])
+
+        if model_id == '':
+            print("model_ids available are:")
+            embeddingList = client.foundation_models.EmbeddingModels
+            print(embeddingList.show())
+            return None
+ 
+        embedding = Embeddings(
+            model_id=model_id,
+            params=embed_params,
+            credentials=creds,
+            project_id=conf["project_id"]
+            )
+        return embedding
+
+    except Exception as e:
+        logger.error(f"load_embedding_model> error loading model: {str(e)}")
+        print(f"load_embedding_model> error loading model: {str(e)}")
+
+        print("Maybe an incorect model_id has been given. model_ids available are:")
+        embeddingList = client.foundation_models.EmbeddingModels
+        print(embeddingList.show())
+
+    return None
+
+def vectorize (embedding, text):
+
+    logger.info(f"vectorize> {text}")
+
+    try: 
+
+        vector = embedding.embed_query(text=text)
+        return vector
+
+    except Exception as e:
+        logger.error(f"vectorize> error generating vector: {str(e)}")
+        print(f"vectorize> error generating vector: {str(e)}")
+
+    return None
+
+def vectorize_list (embedding, text):
+
+    logger.info(f"vectorize_list> {text}")
+
+    try: 
+
+        vector = embedding.embed_documents(texts=text)
+        return vector
+
+    except Exception as e:
+        logger.error(f"vectorize_list> error generating vector: {str(e)}")
+        print(f"vectorize_list> error generating vector: {str(e)}")
+
+    return None
+
 def load_model_deployment(conf, model_id):
 
     logger.info(f"load_model_deployment> model_id: {model_id}")
