@@ -164,6 +164,28 @@ def make_prompt(context, question):
     logger.info(f"make_prompt>\nprompt: {prompt}")
     return prompt
 
+# Chunk data
+def split_into_chunks(text, chunk_size):
+    words = text.split()
+    return [' '.join(words[i:i + chunk_size]) for i in range(0, len(words), chunk_size)]
+
+def chunk_articles(articles, chunk_size):
+    split_articles = {}
+    for k,v in articles.items():
+        split_articles[k] = split_into_chunks(v, 225)
+
+    chunks = []
+    for article_title, article_chunks in split_articles.items():
+
+        for i, chunk in enumerate(article_chunks):
+            
+                escaped_chunk = chunk.replace("'", "''").replace("%", "%%")
+                chunks.append({'id': i+1, 'chunk': escaped_chunk, 'title': article_title})
+            
+        logger.info(f"chunk_articles> {article_title} DONE")
+
+    return chunks
+
 def run_gui(deployment, question):
     from ipywidgets import widgets
 
