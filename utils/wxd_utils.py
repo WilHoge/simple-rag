@@ -219,7 +219,9 @@ def load_model_deployment(conf, model_id):
     return None
 
 def query_milvus(query, num_results=5):
-    
+
+    logger.info(f"query_milvus> {query} ({num_results})")
+
     # Vectorize query
     query_embeddings = wxd_utils.vectorize_list(embedding, [query])
 
@@ -239,6 +241,8 @@ def query_milvus(query, num_results=5):
     return results
 
 def query_milvus_chunks(query, num_results=5):
+
+    logger.info(f"query_milvus_chunks> {query} ({num_results})")
 
     relevant_chunks = []
 
@@ -369,7 +373,7 @@ def run_gui_with_rag(deployment, question):
     context_text = widgets.Textarea(value='', disabled=True)
 
     def on_click(b):
-        logger.info(f"run_gui/on_click> You clicked the button! {text_input.value}")
+        logger.info(f"run_gui_with_rag/on_click> You clicked the button! {text_input.value}")
         context = query_milvus_chunks(text_input.value)
         context_text.value = "\n\n".join(context)
         result_text.value = "asking LLM ..."
@@ -385,7 +389,7 @@ def run_gui_with_rag(deployment, question):
     result_box = widgets.Box([widgets.Label('Answer:'), result_text])
     prompt_box = widgets.Box([widgets.Label('Prompt:'), prompt_text])
 
-    box = widgets.VBox(children=[context_box, input_box, prompt_box, result_box])
+    box = widgets.VBox(children=[input_box, context_box, prompt_box, result_box])
 
     context_text.layout.width = '100%'
     result_text.layout.width = '100%'
