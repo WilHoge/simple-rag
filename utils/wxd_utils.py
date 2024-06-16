@@ -244,7 +244,7 @@ def query_milvus_chunks(query, embedding, basic_collection, num_results=5):
 
     logger.info(f"query_milvus_chunks> {query} ({num_results})")
     
-    results = query_milvus(query, basic_collection, num_results)
+    results = query_milvus(query, embedding, basic_collection, num_results)
 
     relevant_chunks = []
 
