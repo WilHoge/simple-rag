@@ -243,6 +243,8 @@ def query_milvus(query, num_results=5):
 def query_milvus_chunks(query, num_results=5):
 
     logger.info(f"query_milvus_chunks> {query} ({num_results})")
+    
+    results = query_milvus(query, num_results)
 
     relevant_chunks = []
 
