@@ -252,6 +252,8 @@ def query_milvus_chunks(query, num_results=5):
         for hit in hits:
             relevant_chunks.append(hit.article_text)
 
+    logger.info(f"query_milvus_chunks> {relevant_chunks}")
+
     return relevant_chunks
 
 # Prompt LLM
