@@ -378,12 +378,21 @@ def run_gui_with_rag(deployment, basic_collection, question):
 
     def on_click(b):
         logger.info(f"run_gui_with_rag/on_click> You clicked the button! {text_input.value}")
-        context = query_milvus_chunks(text_input.value, basic_collection)
-        context_text.value = "\n\n".join(context)
-        result_text.value = "asking LLM ..."
-        prompt = make_prompt(context, text_input.value)
-        prompt_text.value = prompt
-        result_text.value = ask_llm_prompt(prompt, deployment)
+        try:
+            context = query_milvus_chunks(text_input.value, basic_collection)
+            context_text.value = "\n\n".join(context)
+            result_text.value = "asking LLM ..."
+            prompt = make_prompt(context, text_input.value)
+            prompt_text.value = prompt
+            result_text.value = ask_llm_prompt(prompt, deployment)
+        except Exception as e:
+            logger.error(f"run_gui_with_rag/on_click> error: {str(e)}")
+            print(f"run_gui_with_rag/on_click> error: {str(e)}")
+
+
+#------------------------------------------------------------------------------------------------
+# global 
+#------------------------------------------------------------------------------------------------
 
     button = widgets.Button(description='Ask LLM');
     button.on_click(on_click)
