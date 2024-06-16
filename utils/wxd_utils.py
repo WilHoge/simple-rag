@@ -218,6 +218,36 @@ def load_model_deployment(conf, model_id):
 
     return None
 
+def query_milvus(query, num_results=5):
+    
+    # Vectorize query
+    query_embeddings = wxd_utils.vectorize_list(embedding, [query])
+
+    # Search
+    search_params = {
+        "metric_type": "L2", 
+        "params": {"nprobe": 5}
+    }
+    results = basic_collection.search(
+        data=query_embeddings, 
+        anns_field="vector", 
+        param=search_params,
+        limit=num_results,
+        expr=None, 
+        output_fields=['article_text'],
+    )
+    return results
+
+def query_milvus_chunks(query, num_results=5):
+
+    relevant_chunks = []
+
+    for hits in results:
+        for hit in hits:
+            relevant_chunks.append(hit.article_text)
+
+    return relevant_chunks
+
 # Prompt LLM
 def ask_llm(prompt, model):
     logger.info(f"ask_llm> Call model with {prompt}")
@@ -310,6 +340,40 @@ def run_gui_with_context(deployment, question, context):
         logger.info(f"run_gui/on_click> You clicked the button! {text_input.value}")
         result_text.value = "asking LLM ..."
         prompt = make_prompt([context_text.value], text_input.value)
+        prompt_text.value = prompt
+        result_text.value = ask_llm_prompt(prompt, deployment)
+
+    button = widgets.Button(description='Ask LLM');
+    button.on_click(on_click)
+
+    input_box  = widgets.Box([widgets.Label('Your question!'), text_input, button, widgets.Label(f"model: {deployment['name']}")])
+    context_box = widgets.Box([widgets.Label('Context:'), context_text]) 
+    result_box = widgets.Box([widgets.Label('Answer:'), result_text])
+    prompt_box = widgets.Box([widgets.Label('Prompt:'), prompt_text])
+
+    box = widgets.VBox(children=[context_box, input_box, prompt_box, result_box])
+
+    context_text.layout.width = '100%'
+    result_text.layout.width = '100%'
+    result_text.layout.height = '200px'
+    prompt_text.layout.width = '100%'
+
+    display(box)
+
+def run_gui_with_rag(deployment, question):
+    from ipywidgets import widgets
+
+    text_input = widgets.Textarea(value=question, disabled=False)
+    result_text = widgets.Textarea(value='', disabled=True)
+    prompt_text = widgets.Textarea(value='', disabled=True)
+    context_text = widgets.Textarea(value='', disabled=True)
+
+    def on_click(b):
+        logger.info(f"run_gui/on_click> You clicked the button! {text_input.value}")
+        context = query_milvus_chunks(text_input.value)
+        context_text.value = "\n\n".join(context)
+        result_text.value = "asking LLM ..."
+        prompt = make_prompt(context, text_input.value)
         prompt_text.value = prompt
         result_text.value = ask_llm_prompt(prompt, deployment)
 
