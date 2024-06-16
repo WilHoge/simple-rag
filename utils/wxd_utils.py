@@ -218,7 +218,7 @@ def load_model_deployment(conf, model_id):
 
     return None
 
-def query_milvus(query, basic_collection, num_results=5):
+def query_milvus(query, embedding, basic_collection, num_results=5):
 
     logger.info(f"query_milvus> {query} ({num_results})")
 
@@ -240,7 +240,7 @@ def query_milvus(query, basic_collection, num_results=5):
     )
     return results
 
-def query_milvus_chunks(query, basic_collection, num_results=5):
+def query_milvus_chunks(query, embedding, basic_collection, num_results=5):
 
     logger.info(f"query_milvus_chunks> {query} ({num_results})")
     
@@ -345,7 +345,7 @@ def run_gui_with_context(deployment, question, context):
     context_text = widgets.Textarea(value=context, disabled=True)
 
     def on_click(b):
-        logger.info(f"run_gui/on_click> You clicked the button! {text_input.value}")
+        logger.info(f"run_gui_with_context/on_click> You clicked the button! {text_input.value}")
         result_text.value = "asking LLM ..."
         prompt = make_prompt([context_text.value], text_input.value)
         prompt_text.value = prompt
@@ -368,7 +368,7 @@ def run_gui_with_context(deployment, question, context):
 
     display(box)
 
-def run_gui_with_rag(deployment, basic_collection, question):
+def run_gui_with_rag(deployment, embedding, basic_collection, question):
     from ipywidgets import widgets
 
     text_input = widgets.Textarea(value=question, disabled=False)
@@ -379,7 +379,7 @@ def run_gui_with_rag(deployment, basic_collection, question):
     def on_click(b):
         logger.info(f"run_gui_with_rag/on_click> You clicked the button! {text_input.value}")
         try:
-            context = query_milvus_chunks(text_input.value, basic_collection)
+            context = query_milvus_chunks(text_input.value, embedding, basic_collection)
             context_text.value = "\n\n".join(context)
             result_text.value = "asking LLM ..."
             prompt = make_prompt(context, text_input.value)
