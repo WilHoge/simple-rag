@@ -223,7 +223,7 @@ def query_milvus(query, basic_collection, num_results=5):
     logger.info(f"query_milvus> {query} ({num_results})")
 
     # Vectorize query
-    query_embeddings = wxd_utils.vectorize_list(embedding, [query])
+    query_embeddings = vectorize_list(embedding, [query])
 
     # Search
     search_params = {
