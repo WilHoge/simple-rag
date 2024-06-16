@@ -218,7 +218,7 @@ def load_model_deployment(conf, model_id):
 
     return None
 
-def query_milvus(query, num_results=5):
+def query_milvus(query, basic_collection, num_results=5):
 
     logger.info(f"query_milvus> {query} ({num_results})")
 
@@ -240,11 +240,11 @@ def query_milvus(query, num_results=5):
     )
     return results
 
-def query_milvus_chunks(query, num_results=5):
+def query_milvus_chunks(query, basic_collection, num_results=5):
 
     logger.info(f"query_milvus_chunks> {query} ({num_results})")
     
-    results = query_milvus(query, num_results)
+    results = query_milvus(query, basic_collection, num_results)
 
     relevant_chunks = []
 
@@ -368,7 +368,7 @@ def run_gui_with_context(deployment, question, context):
 
     display(box)
 
-def run_gui_with_rag(deployment, question):
+def run_gui_with_rag(deployment, basic_collection, question):
     from ipywidgets import widgets
 
     text_input = widgets.Textarea(value=question, disabled=False)
