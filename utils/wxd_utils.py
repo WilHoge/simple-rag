@@ -293,7 +293,7 @@ def split_into_chunks(text, chunk_size):
 def chunk_articles(articles, chunk_size):
     split_articles = {}
     for k,v in articles.items():
-        split_articles[k] = split_into_chunks(v, 225)
+        split_articles[k] = split_into_chunks(v, chunk_size)
 
     chunks = []
     for article_title, article_chunks in split_articles.items():
