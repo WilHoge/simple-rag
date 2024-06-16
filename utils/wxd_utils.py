@@ -378,7 +378,7 @@ def run_gui_with_rag(deployment, basic_collection, question):
 
     def on_click(b):
         logger.info(f"run_gui_with_rag/on_click> You clicked the button! {text_input.value}")
-        context = query_milvus_chunks(text_input.value)
+        context = query_milvus_chunks(text_input.value, basic_collection)
         context_text.value = "\n\n".join(context)
         result_text.value = "asking LLM ..."
         prompt = make_prompt(context, text_input.value)
