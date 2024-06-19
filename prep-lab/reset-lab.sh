@@ -16,3 +16,6 @@ sudo ~labuser/simple-rag/install/start-wxd.sh
 
 # 5. delete data from Presto tables and Milvus collection
 sudo su - labuser -c ~labuser/simple-rag/prep-lab/remove-data.sh
+
+# 6. delete data in Minio
+/usr/local/bin/mc rm --recursive --force myminio/iceberg-bucket/simple_rag

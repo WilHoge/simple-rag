@@ -24,6 +24,8 @@ try:
             connection.execute(drop_table)
             connection.execute(drop_schema)
 
+    print("table wikipedia and schema simple_rag removed")
+
 except sqlalchemy.exc.SQLAlchemyError as e:
     print("Error:", str(e))
 
@@ -52,8 +54,12 @@ connections.connect(alias = 'default',
 # remove collection
 
 try: 
+
     basic_collection = Collection("wiki_articles") 
     basic_collection.drop()
+
+    print("collection wiki_articles")
+    
 except Exception as e:
     print("Error:", str(e))
 

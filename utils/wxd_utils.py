@@ -18,6 +18,8 @@ def load_conf():
         "lh_schema": os.getenv("LH_SCHEMA", "tiny"),
         "lh_catalog": os.getenv("LH_CATALOG", "tpch"),
         "milvus_port": os.getenv("MILVUS_PORT", "19530"),
+        "minio_access_key": os.getenv("MINIO_ACCESS_KEY", None),
+        "minio_secret_key": os.getenv("MINIO_SECRET_KEY", None),
         "default_query": os.getenv("DEFAULT_QUERY", "Who is Jon Fosse?")
     }
 
