@@ -58,7 +58,7 @@ try:
     basic_collection = Collection("wiki_articles") 
     basic_collection.drop()
 
-    print("collection wiki_articles")
+    print("collection wiki_articles removed")
     
 except Exception as e:
     print("Error:", str(e))
