@@ -2,4 +2,4 @@
 # should use the ~labuser/venv 
 
 . ~labuser/venv/bin/activate
-pip install -r ~labuser/simple-rag/tests/requirements.txt 
+pip install -r ~labuser/simple-rag/utils/requirements.txt 
