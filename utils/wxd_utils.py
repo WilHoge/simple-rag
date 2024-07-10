@@ -98,25 +98,19 @@ def load_embedding_model(conf, model_id):
 
     logger.info(f"load_embedding_model> model_id: {model_id}")
 
-    from ibm_watsonx_ai import APIClient, Credentials
-    global client
-
     creds = {
         "url": conf["ibm_cloud_url"],
         "apikey": conf["api_key"] 
     }
 
     embed_params = {
-        EmbedParams.TRUNCATE_INPUT_TOKENS: 3,
+        EmbedParams.TRUNCATE_INPUT_TOKENS: 512,
         EmbedParams.RETURN_OPTIONS: {
             'input_text': True
             }
     }
 
     try:
-
-        if client == None:
-            client=APIClient(creds, space_id=conf['space_id'])
 
         if model_id == '':
             print("model_ids available are:")
