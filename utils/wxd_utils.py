@@ -263,14 +263,21 @@ def ask_llm_prompt(prompt, deployment):
 
     from ibm_watsonx_ai.metanames import GenTextParamsMetaNames
 
-    response = client.deployments.generate_text(
-        deployment_id=deployment['id'],
-        params={
-            GenTextParamsMetaNames.PROMPT_VARIABLES: {
-                "query": prompt
-            }})
+    try:
+        response = client.deployments.generate_text(
+            deployment_id=deployment['id'],
+            params={
+                GenTextParamsMetaNames.PROMPT_VARIABLES: {
+                    "query": prompt
+                }})
 
-    return response
+        return response
+
+    except Exception as e:
+        logger.error(f"ask_llm_prompt> error generating text: {str(e)}")
+        print(f"ask_llm_prompt> error generating text: {str(e)}")
+    
+    return None
 
 def make_prompt(context, question):
     logger.info(f"make_prompt>\ncontext: {context}\nquestion: {question}")
