@@ -279,12 +279,26 @@ def ask_llm_prompt(prompt, deployment):
     
     return None
 
+def set_prompt_template(new_template):
+    from string import Template
+
+    if new_template == '':
+        prompt_template=Template("$context\n\nPlease answer a question using this text. "
+          + "If the question is unanswerable, say \"unanswerable\"."
+          + "\n\nQuestion: $question")
+    else:
+        prompt_template=Template(new_template)
+
+    return(prompt_template)
+
+def get_prompt_template():
+    return prompt_template.template
+
 def make_prompt(context, question):
     logger.info(f"make_prompt>\ncontext: {context}\nquestion: {question}")
     context = "\n\n".join(context)
-    prompt = (f"{context}\n\nPlease answer a question using this text. "
-          + f"If the question is unanswerable, say \"unanswerable\"."
-          + f"\n\nQuestion: {question}")
+    data={"context": context, "question": question}
+    prompt = prompt_template.substitute(data)
     logger.info(f"make_prompt>\nprompt: {prompt}")
     return prompt
 
@@ -424,6 +438,7 @@ def write_log(level, text):
 
 # global variables
 client = None
+prompt_template = set_prompt_template('')
 
 # initialize logging
 import logging
