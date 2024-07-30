@@ -282,6 +282,8 @@ def ask_llm_prompt(prompt, deployment):
 def set_prompt_template(new_template):
     from string import Template
 
+    global prompt_template
+
     if new_template == '':
         prompt_template=Template("$context\n\nPlease answer a question using this text. "
           + "If the question is unanswerable, say \"unanswerable\"."
