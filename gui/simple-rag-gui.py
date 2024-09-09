@@ -1,16 +1,40 @@
-
+# load utils helper functions
 import sys
 sys.path.append("../utils")
 import wxd_utils
 
+# load config
 conf=wxd_utils.load_conf()
 print(conf)
 
-# call without a model_id to learn what models are available
-# wxd_utils.load_model_deployment(conf, '')
+# initialize Milvus
+from pymilvus import(
+    Milvus,
+    IndexType,
+    Status,
+    connections,
+    FieldSchema,
+    DataType,
+    Collection,
+    CollectionSchema,
+)
 
-deployment = wxd_utils.load_model_deployment(conf, 'granite-13b-chat')
-print(deployment)
+connections.connect(alias = 'default',
+                host = conf["host"],
+                port = conf["milvus_port"],
+                user = conf["user"],
+                password = conf["password"],
+                server_pem_path = conf["lh_cert"],
+                server_name = conf["host"],
+                secure = True)
+
+basic_collection = Collection("wiki_articles")      
+basic_collection.load()
+
+# load embedding
+embedding = wxd_utils.load_embedding_model(conf, 'ibm/slate-125m-english-rtrvr')
+
+
 
 import streamlit as st
 
@@ -29,21 +53,60 @@ def run_gui(deployment, question):
 
     st.write("")
 
+def run_gui_with_context(deployment, question, context):
+    st.write("Context:")
+    context_text = st.text_area("Context", value=context, height=100)
 
-st.title("Test App for LLM improvement by using and RAG")
+    st.write("Your question!")
+    text_input = st.text_area("Enter your question", value=question, height=100)
+
+    if st.button("Ask LLM"):
+        st.write("Asking LLM...")
+        prompt = wxd_utils.make_prompt([context_text], text_input)
+        st.write("Prompt:")
+        st.text_area("Prompt", value=prompt, height=100, disabled=True)
+        result = wxd_utils.ask_llm_prompt(prompt, deployment)
+        st.write("Answer:")
+        st.text_area("Result", value=result, height=200, disabled=True)
+        st.write(f"Model: {deployment['name']}")
+
+    st.write("")
+
+def run_gui_with_rag(deployment, embedding, basic_collection, question):
+    st.write("Your question!")
+    text_input = st.text_area("Enter your question", value=question, height=100)
+
+    if st.button("Ask LLM"):
+        try:
+            context = wxd_utils.query_milvus_chunks(text_input, embedding, basic_collection)
+            st.write("Context:")
+            st.text_area("Context", value="\n\n".join(context), height=200, disabled=True)
+            st.write("Asking LLM...")
+            prompt = wx_utils.make_prompt(context, text_input)
+            st.write("Prompt:")
+            st.text_area("Prompt", value=prompt, height=100, disabled=True)
+            result = wxd_utils.ask_llm_prompt(prompt, deployment)
+            st.write("Answer:")
+            st.text_area("Result", value=result, height=200, disabled=True)
+        except Exception as e:
+            st.error(f"Error: {str(e)}")
+
+st.title("Test App for LLM improvement by using RAG")
+
+model_option = st.radio("Select LLM", ["granite-13b-chat", "llama-2-70b-chat", "llama-3-405b-instruct", "mixtral-8x7b-instruct", "llama3-70b-instruct"])
+deployment = wxd_utils.load_model_deployment(conf, model_option)
+print(deployment)
 
 options = ["Just LLM", "LLM with context", "LLM with RAG"]
 selected_option = st.radio("Select an option", options)
 
 if selected_option == "Just LLM":
-    st.write("You selected Option 1!")
     run_gui (deployment, conf["default_query"])
 elif selected_option == "LLM with context":
-    st.write("You selected Option 2!")
+    import wikipedia
+    article = wikipedia.page(pageid=72508137)
+    run_gui_with_context (deployment, conf["default_query"], article.content)
 elif selected_option == "LLM with RAG":
-    st.write("option3")
+    run_gui_with_rag (deployment, embedding, basic_collection, conf["default_query"])
 else:
-    st.write("You selected Option 3!")
-
-
-
+    st.write("")
