@@ -82,7 +82,7 @@ def run_gui_with_rag(deployment, embedding, basic_collection, question):
             st.write("Context:")
             st.text_area("Context", value="\n\n".join(context), height=200, disabled=True)
             st.write("Asking LLM...")
-            prompt = wx_utils.make_prompt(context, text_input)
+            prompt = wxd_utils.make_prompt(context, text_input)
             st.write("Prompt:")
             st.text_area("Prompt", value=prompt, height=100, disabled=True)
             result = wxd_utils.ask_llm_prompt(prompt, deployment)
