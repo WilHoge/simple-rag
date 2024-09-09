@@ -45,10 +45,8 @@ def run_gui(deployment, question):
         st.write("Asking LLM...")
         prompt = text_input
         result = wxd_utils.ask_llm_prompt(prompt, deployment)
-        st.write("Answer:")
-        st.text_area("Result", value=result, height=200, disabled=True)
-        st.write("Prompt:")
-        st.text_area("Prompt", value=prompt, height=100, disabled=True)
+        st.text_area("Result:", value=result, height=200, disabled=True)
+        st.text_area("Prompt:", value=prompt, height=100, disabled=True)
         st.write(f"Model: {deployment['name']}")
 
     st.write("")
@@ -57,37 +55,31 @@ def run_gui_with_context(deployment, question, context):
     st.write("Context:")
     context_text = st.text_area("Context", value=context, height=100)
 
-    st.write("Your question!")
     text_input = st.text_area("Enter your question", value=question, height=100)
 
     if st.button("Ask LLM"):
         st.write("Asking LLM...")
         prompt = wxd_utils.make_prompt([context_text], text_input)
-        st.write("Prompt:")
-        st.text_area("Prompt", value=prompt, height=100, disabled=True)
+        st.text_area("Prompt:", value=prompt, height=100, disabled=True)
         result = wxd_utils.ask_llm_prompt(prompt, deployment)
-        st.write("Answer:")
-        st.text_area("Result", value=result, height=200, disabled=True)
+        st.text_area("Result:", value=result, height=200, disabled=True)
         st.write(f"Model: {deployment['name']}")
 
     st.write("")
 
 def run_gui_with_rag(deployment, embedding, basic_collection, question):
-    st.write("Your question!")
     text_input = st.text_area("Enter your question", value=question, height=100)
 
     if st.button("Ask LLM"):
         try:
             context = wxd_utils.query_milvus_chunks(text_input, embedding, basic_collection)
-            st.write("Context:")
             st.text_area("Context", value="\n\n".join(context), height=200, disabled=True)
             st.write("Asking LLM...")
             prompt = wxd_utils.make_prompt(context, text_input)
-            st.write("Prompt:")
-            st.text_area("Prompt", value=prompt, height=100, disabled=True)
+            st.text_area("Prompt:", value=prompt, height=100, disabled=True)
             result = wxd_utils.ask_llm_prompt(prompt, deployment)
-            st.write("Answer:")
-            st.text_area("Result", value=result, height=200, disabled=True)
+            st.text_area("Result:", value=result, height=200, disabled=True)
+            st.write(f"Model: {deployment['name']}")
         except Exception as e:
             st.error(f"Error: {str(e)}")
 
