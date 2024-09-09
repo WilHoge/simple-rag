@@ -86,11 +86,11 @@ def run_gui_with_rag(deployment, embedding, basic_collection, question):
 st.title("Test App for LLM improvement by using RAG")
 
 model_option = st.radio("Select LLM", ["granite-13b-chat", "llama-2-70b-chat", "llama-3-405b-instruct", "mixtral-8x7b-instruct", "llama3-70b-instruct"])
-deployment = wxd_utils.load_model_deployment(conf, model_option)
+deployment = wxd_utils.load_model_deployment(conf, model_option, horizontal=True)
 print(deployment)
 
 options = ["Just LLM", "LLM with context", "LLM with RAG"]
-selected_option = st.radio("Select an option", options)
+selected_option = st.radio("Select an option", options, horizontal=True)
 
 if selected_option == "Just LLM":
     run_gui (deployment, conf["default_query"])
