@@ -11,3 +11,4 @@ python-dotenv
 ibm-cloud-sdk-core
 ibm_watsonx_ai
 wikipedia
+streamlit
